@@ -158,17 +158,19 @@ class TAKClient:
         
         # Create appropriate worker based on protocol
         if protocol == "tcp" or protocol == "tls":
-            self.tx_worker = pytak.TCPTXWorker(
-                tx_queue=self.tx_queue,
-                host=host,
-                port=port,
+            # Use the EventWorker with TCP URL
+            cot_url = f"{protocol}://{host}:{port}"
+            self.tx_worker = pytak.EventWorker(
+                self.tx_queue,
+                cot_url,
                 ssl_context=ssl_context
             )
         elif protocol == "udp":
-            self.tx_worker = pytak.UDPTXWorker(
-                tx_queue=self.tx_queue,
-                host=host,
-                port=port
+            # Use the EventWorker with UDP URL
+            cot_url = f"udp://{host}:{port}"
+            self.tx_worker = pytak.EventWorker(
+                self.tx_queue,
+                cot_url
             )
         else:
             raise ValueError(f"Unsupported protocol: {protocol}")

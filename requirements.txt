@@ -4,6 +4,7 @@ aiofiles>=23.2.1
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 python-dotenv>=1.0.0
+cryptography>=41.0.0
 
 # Logging and monitoring
 structlog>=24.1.0
