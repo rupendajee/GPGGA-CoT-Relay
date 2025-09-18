@@ -35,7 +35,21 @@ Standard GPGGA fields plus:
 
 ## Quick Start
 
-### Using Docker (Recommended)
+### Option 1: Deploy from GitHub (Recommended for DigitalOcean)
+
+On your DigitalOcean droplet, run this one-liner (replace `yourusername` with your GitHub username):
+
+```bash
+curl -sSL https://raw.githubusercontent.com/yourusername/gpgga-cot-relay/main/quick-deploy.sh | sudo bash -s yourusername
+```
+
+Then edit the configuration:
+```bash
+nano /opt/gpgga-cot-relay/.env  # Set your TAK_SERVER_URL
+cd /opt/gpgga-cot-relay && docker-compose restart
+```
+
+### Option 2: Local Docker Deployment
 
 1. Clone the repository:
 ```bash

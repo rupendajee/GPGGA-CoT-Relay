@@ -120,33 +120,29 @@ deploy_single() {
 quick_start() {
     print_status "Quick start deployment..."
     
-    # Create minimal docker-compose.yml if not exists
-    if [[ ! -f docker-compose.yml ]]; then
-        cat > docker-compose.yml << 'EOF'
-version: '3.8'
-
-services:
-  gpgga-cot-relay:
-    image: ghcr.io/yourusername/gpgga-cot-relay:latest
-    container_name: gpgga-cot-relay
-    restart: unless-stopped
-    ports:
-      - "5005:5005/udp"
-      - "8089:8089"
-    environment:
-      - TAK_SERVER_URL=${TAK_SERVER_URL}
-      - UDP_LISTEN_PORT=${UDP_LISTEN_PORT:-5005}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
-      - METRICS_PORT=${METRICS_PORT:-8089}
-    volumes:
-      - ./logs:/app/logs
-      - ./config:/app/config:ro
-EOF
+    # Check if we have the necessary files to build
+    if [[ ! -f Dockerfile ]]; then
+        print_error "Dockerfile not found. Please run this from the project root directory."
+        exit 1
     fi
     
     create_config
-    docker-compose pull
+    
+    # Build the image locally
+    print_status "Building Docker image locally..."
+    docker build -t $DOCKER_IMAGE .
+    
+    # Deploy with docker-compose
     docker-compose up -d
+    
+    print_status "Deployment complete!"
+    echo ""
+    echo "Commands:"
+    echo "  View logs:      docker-compose logs -f"
+    echo "  Stop service:   docker-compose down"
+    echo "  Restart:        docker-compose restart"
+    echo "  View metrics:   curl http://localhost:8089/metrics"
+    echo ""
 }
 
 # Main menu
@@ -155,8 +151,8 @@ show_menu() {
     echo "GPGGA to CoT Relay - Docker Deployment"
     echo "======================================"
     echo ""
-    echo "1) Quick start (pull from registry)"
-    echo "2) Build and deploy locally"
+    echo "1) Quick start (build and deploy)"
+    echo "2) Build and deploy with options"
     echo "3) Deploy with docker-compose"
     echo "4) Deploy single container"
     echo "5) Stop all containers"

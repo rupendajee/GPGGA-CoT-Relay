@@ -103,12 +103,12 @@ timedatectl set-timezone America/New_York  # Change to your timezone
 ### Option A: Quick Docker Deployment
 
 ```bash
-# Download deployment script
-wget https://raw.githubusercontent.com/yourusername/gpgga-cot-relay/main/deploy/deploy-docker.sh
-chmod +x deploy-docker.sh
+# Clone the repository
+git clone https://github.com/yourusername/gpgga-cot-relay.git
+cd gpgga-cot-relay
 
-# Run quick deployment
-./deploy-docker.sh quick
+# Run the deployment script
+./deploy.sh
 ```
 
 ### Option B: Manual Docker Deployment
