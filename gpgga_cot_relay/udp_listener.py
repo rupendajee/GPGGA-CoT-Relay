@@ -152,7 +152,6 @@ class UDPListener:
             self.transport, self.protocol = await loop.create_datagram_endpoint(
                 lambda: UDPProtocol(self.message_handler),
                 local_addr=(self.settings.udp_listen_host, self.settings.udp_listen_port),
-                reuse_address=True,
                 reuse_port=True  # Allow multiple processes to bind
             )
             
