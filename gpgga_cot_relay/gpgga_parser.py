@@ -71,13 +71,13 @@ class GPGGAParser:
         r'([EW]),'                       # Longitude direction
         r'([0-8]),'                      # Fix quality
         r'(\d+),'                        # Number of satellites
-        r'(\d+\.\d+)?,'                  # HDOP
+        r'(\d*\.?\d+)?,'                 # HDOP (can be like 0.9, 1.2, or even just 1)
         r'(-?\d+\.?\d*),'                # Altitude
         r'M,'                            # Altitude units (always M)
         r'(-?\d+\.?\d*)?,'               # Geoid separation
         r'M?,'                           # Geoid units
-        r'(\d+\.?\d*)?,'                 # DGPS time
-        r'(\d+)?,'                       # DGPS station ID
+        r'([^,]*)?,'                     # DGPS time (can be empty)
+        r'([^,]*)?,'                     # DGPS station ID (can be empty)
         r'([^*]+)'                       # Device ID (custom field)
         r'\*([0-9A-F]{2})$'              # Checksum
     )
@@ -105,7 +105,9 @@ class GPGGAParser:
             # Match the pattern
             match = cls.GPGGA_PATTERN.match(sentence)
             if not match:
-                logger.warning("Invalid GPGGA format", sentence=sentence)
+                logger.warning("Invalid GPGGA format", 
+                              sentence=sentence,
+                              sentence_parts=sentence.split(','))
                 return None
             
             # Extract groups
@@ -139,11 +141,11 @@ class GPGGAParser:
                 longitude=longitude,
                 fix_quality=int(fix_quality),
                 num_satellites=int(num_sats),
-                hdop=float(hdop) if hdop else 0.0,
+                hdop=float(hdop) if hdop and hdop.strip() else 0.0,
                 altitude=float(altitude),
-                geoid_separation=float(geoid_sep) if geoid_sep else None,
-                dgps_time=float(dgps_time) if dgps_time else None,
-                dgps_station_id=dgps_station if dgps_station else None,
+                geoid_separation=float(geoid_sep) if geoid_sep and geoid_sep.strip() else None,
+                dgps_time=float(dgps_time) if dgps_time and dgps_time.strip() else None,
+                dgps_station_id=dgps_station if dgps_station and dgps_station.strip() else None,
                 device_id=device_id.strip()
             )
             
