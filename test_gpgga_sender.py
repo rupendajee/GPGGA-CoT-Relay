@@ -51,7 +51,7 @@ def generate_gpgga(device_id, lat=None, lon=None, alt=None):
     # Build sentence without checksum
     sentence = (
         f"GPGGA,{time_str},{lat_str},{lat_dir},{lon_str},{lon_dir},"
-        f"1,08,0.9,{alt:.1f},M,46.9,M,,{device_id}"
+        f"1,08,0.9,{alt:.1f},M,46.9,M,,,{device_id}"
     )
     
     # Calculate checksum
