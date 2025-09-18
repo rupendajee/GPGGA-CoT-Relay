@@ -6,7 +6,15 @@ set -e
 
 # Get GitHub username from argument or use default
 GITHUB_USER=${1:-yourusername}
-GITHUB_REPO="https://github.com/$GITHUB_USER/gpgga-cot-relay.git"
+# Try to detect the actual repo name by checking common variations
+REPO_NAME="gpgga-cot-relay"
+for name in "GPGGA-CoT-Relay" "gpgga-cot-relay" "GPGGACoTRelay"; do
+    if curl -s -o /dev/null -w "%{http_code}" "https://github.com/$GITHUB_USER/$name" | grep -q "200"; then
+        REPO_NAME=$name
+        break
+    fi
+done
+GITHUB_REPO="https://github.com/$GITHUB_USER/$REPO_NAME.git"
 
 echo "Deploying GPGGA to CoT Relay from $GITHUB_REPO"
 
