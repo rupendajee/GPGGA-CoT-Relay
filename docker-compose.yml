@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  gpgga-cot-relay:
+    build: .
+    container_name: gpgga-cot-relay
+    restart: unless-stopped
+    
+    # Environment variables
+    environment:
+      - UDP_LISTEN_HOST=0.0.0.0
+      - UDP_LISTEN_PORT=5005
+      - TAK_SERVER_URL=${TAK_SERVER_URL:-tcp://tak-server:8087}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - METRICS_PORT=8089
+      - DEVICE_TYPE=${DEVICE_TYPE:-a-f-G-U-C}
+      - STALE_TIME_SECONDS=${STALE_TIME_SECONDS:-300}
+    
+    # Port mappings
+    ports:
+      - "${UDP_LISTEN_PORT:-5005}:5005/udp"  # UDP listener port
+      - "${METRICS_PORT:-8089}:8089"         # Prometheus metrics
+    
+    # Volume for persistent logs
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+    
+    # Network configuration
+    networks:
+      - cot-network
+
+networks:
+  cot-network:
+    driver: bridge
