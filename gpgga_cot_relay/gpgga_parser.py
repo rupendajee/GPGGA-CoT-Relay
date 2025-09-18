@@ -65,9 +65,9 @@ class GPGGAParser:
     GPGGA_PATTERN = re.compile(
         r'^\$GPGGA,'
         r'(\d{6}(?:\.\d+)?)?,'          # Time (HHMMSS.sss)
-        r'(\d{2,4}\d{2}\.\d+),'          # Latitude (DDMM.mmmm)
+        r'(\d+\.\d+),'                   # Latitude (DDMM.mmmm or DDDMM.mmmm)
         r'([NS]),'                       # Latitude direction
-        r'(\d{3,5}\d{2}\.\d+),'          # Longitude (DDDMM.mmmm)
+        r'(\d+\.\d+),'                   # Longitude (DDDMM.mmmm or DDMM.mmmm)
         r'([EW]),'                       # Longitude direction
         r'([0-8]),'                      # Fix quality
         r'(\d+),'                        # Number of satellites
@@ -186,13 +186,19 @@ class GPGGAParser:
         Returns:
             Decimal degrees
         """
-        # Determine if longitude (3 degree digits) or latitude (2 degree digits)
-        if len(coord_str.split('.')[0]) == 5:  # Longitude
-            degrees = int(coord_str[:3])
-            minutes = float(coord_str[3:])
-        else:  # Latitude
-            degrees = int(coord_str[:2])
-            minutes = float(coord_str[2:])
+        # Split on decimal point to get the integer part
+        parts = coord_str.split('.')
+        integer_part = parts[0]
+        decimal_part = parts[1] if len(parts) > 1 else '0'
+        
+        # Last 2 digits of integer part are minutes
+        if len(integer_part) >= 2:
+            degrees = int(integer_part[:-2]) if len(integer_part) > 2 else 0
+            minutes_int = int(integer_part[-2:])
+            minutes = float(f"{minutes_int}.{decimal_part}")
+        else:
+            degrees = 0
+            minutes = float(coord_str)
         
         decimal = degrees + (minutes / 60.0)
         return -decimal if is_negative else decimal
