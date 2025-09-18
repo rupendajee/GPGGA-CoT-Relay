@@ -18,7 +18,7 @@ from .logging_config import (
 from .gpgga_parser import GPGGAData
 from .cot_converter import CoTConverter
 from .udp_listener import UDPListener
-from .tak_client import TAKClient
+from .tak_client_simple import SimpleTAKClient as TAKClient
 
 logger = structlog.get_logger(__name__)
 

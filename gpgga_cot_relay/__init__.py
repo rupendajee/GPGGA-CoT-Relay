@@ -7,7 +7,7 @@ from .config import Settings
 from .gpgga_parser import GPGGAParser, GPGGAData
 from .cot_converter import CoTConverter
 from .udp_listener import UDPListener
-from .tak_client import TAKClient
+from .tak_client_simple import SimpleTAKClient as TAKClient
 
 __all__ = [
     "Settings",
